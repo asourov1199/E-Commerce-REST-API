@@ -1,10 +1,17 @@
-"""Main URL configuration."""
-from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.routers import DefaultRouter
+
+from .views import api_root, CategoryViewSet, ProductViewSet, OrderViewSet, RegisterView
+
+router = DefaultRouter()
+router.register("categories", CategoryViewSet, basename="category")
+router.register("products", ProductViewSet, basename="product")
+router.register("orders", OrderViewSet, basename="order")
 
 urlpatterns = [
-    path("", RedirectView.as_view(pattern_name="api-root", permanent=False)),
-    path("admin/", admin.site.urls),
-    path("api/", include("store.urls")),
+    path("", api_root, name="api-root"),
+    path("auth/register/", RegisterView.as_view(), name="register"),
+    path("auth/login/", obtain_auth_token, name="login"),
+    path("", include(router.urls)),
 ]
